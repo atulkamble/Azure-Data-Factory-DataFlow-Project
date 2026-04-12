@@ -1,7 +1,3 @@
-Here’s a **complete Azure Data Factory (ADF) Data Flow Project** — structured exactly in your preferred **trainer + README style**, with **clear steps, architecture, and hands-on implementation**.
-
----
-
 # 🚀 Azure Data Factory (ADF) Data Flow Project
 
 ## 📌 Project Title
