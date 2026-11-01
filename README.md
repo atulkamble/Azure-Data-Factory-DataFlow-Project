@@ -38,6 +38,24 @@ flowchart LR
 
 ---
 
+## Terraform Deployment
+
+Deploy the full Azure Data Factory lab, including storage, sample CSV, managed identity permissions, linked service, datasets, Data Flow, and pipeline, using the [Terraform configuration](terraform/README.md).
+
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+# Set subscription_id in terraform.tfvars
+terraform init
+terraform validate
+terraform plan
+terraform apply
+```
+
+Terraform provisions the resources; run the pipeline separately using the commands in `terraform/README.md`. Live deployment has not yet been verified.
+
+---
+
 ## 🧰 Services Used
 
 * Azure Data Factory
