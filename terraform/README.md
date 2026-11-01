@@ -33,6 +33,27 @@ terraform output
 
 Terraform uploads `../sample-data/employees.csv` to `raw/input/employees.csv`. It creates the ADF artifacts from the JSON files in the parent repository. ADF linked-service storage endpoint is generated from the new account.
 
+## Verified deployment (1 November 2026)
+
+Terraform deployment succeeded in Azure subscription `08b7b8d4-af42-4972-9517-11ea256ea068`, region `centralindia`.
+
+| Resource | Deployed name |
+|---|---|
+| Resource group | `rg-adf-dataflow-ukamp80b` |
+| Data Factory | `adf-dataflow-ukamp80b` |
+| Storage account | `stadfukamp80b` |
+| Containers | `raw`, `clean` |
+| Source blob | `raw/input/employees.csv` |
+| Linked service | `ls_blob_storage` |
+| Datasets | `ds_employees_raw`, `ds_employees_clean` |
+| Mapping Data Flow | `df_employee_transform` |
+| Pipeline | `pl_employee_transform` |
+| Permissions | Data Factory managed identity: Storage Blob Data Contributor |
+
+The first apply created 8 resources, then stopped because the linked service explicitly referenced `AutoResolveIntegrationRuntime`. Removing that reference resolved the Azure API error. The next apply completed with **5 added, 0 changed, 0 destroyed**, bringing the total to **13 resources**.
+
+`terraform validate` and `terraform plan` succeeded. **Pipeline execution and CSV output have not yet been verified.**
+
 ## 4. Run the pipeline
 
 ```bash
