@@ -9,13 +9,16 @@
     "typeProperties": {
       "location": {
         "type": "AzureBlobStorageLocation",
-        "folderPath": "output",
-        "container": "clean"
+        "container": "clean",
+        "folderPath": "output"
       },
       "columnDelimiter": ",",
+      "rowDelimiter": "\n",
+      "encodingName": "UTF-8",
       "escapeChar": "\\",
+      "quoteChar": "\"",
       "firstRowAsHeader": true,
-      "quoteChar": "\""
+      "nullValue": ""
     },
     "schema": [
       {
@@ -42,6 +45,9 @@
         "name": "department",
         "type": "String"
       }
+    ],
+    "annotations": [
+      "Output directory only; the Data Flow sink controls generated file naming. Numeric types are defined in the Data Flow projection."
     ]
   }
 }
