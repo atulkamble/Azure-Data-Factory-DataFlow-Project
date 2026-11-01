@@ -9,14 +9,17 @@
     "typeProperties": {
       "location": {
         "type": "AzureBlobStorageLocation",
-        "fileName": "employees.csv",
+        "container": "raw",
         "folderPath": "input",
-        "container": "raw"
+        "fileName": "employees.csv"
       },
       "columnDelimiter": ",",
+      "rowDelimiter": "\n",
+      "encodingName": "UTF-8",
       "escapeChar": "\\",
+      "quoteChar": "\"",
       "firstRowAsHeader": true,
-      "quoteChar": "\""
+      "nullValue": ""
     },
     "schema": [
       {
@@ -39,6 +42,9 @@
         "name": "department",
         "type": "String"
       }
+    ],
+    "annotations": [
+      "CSV values are strings at the dataset layer; Mapping Data Flow source projection converts numeric fields."
     ]
   }
 }
