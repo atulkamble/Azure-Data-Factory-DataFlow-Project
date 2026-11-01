@@ -42,9 +42,6 @@
         "name": "department",
         "type": "String"
       }
-    ],
-    "annotations": [
-      "CSV values are strings at the dataset layer; Mapping Data Flow source projection converts numeric fields."
     ]
   }
 }
