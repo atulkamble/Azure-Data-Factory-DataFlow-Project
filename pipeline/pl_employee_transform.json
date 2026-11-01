@@ -14,15 +14,15 @@
           "secureInput": false
         },
         "typeProperties": {
-          "dataflow": {
-            "referenceName": "df_employee_transform",
-            "type": "DataFlowReference"
-          },
           "compute": {
             "coreCount": 8,
             "computeType": "General"
           },
-          "traceLevel": "Fine"
+          "traceLevel": "Fine",
+          "dataFlow": {
+            "referenceName": "df_employee_transform",
+            "type": "DataFlowReference"
+          }
         },
         "userProperties": []
       }
