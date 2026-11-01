@@ -47,8 +47,7 @@ resource "azurerm_storage_container" "clean" {
 
 resource "azurerm_storage_blob" "employees" {
   name                   = "input/employees.csv"
-  storage_account_name   = azurerm_storage_account.lab.name
-  storage_container_name = azurerm_storage_container.raw.name
+  storage_container_id   = azurerm_storage_container.raw.id
   type                   = "Block"
   source                 = "${path.module}/../sample-data/employees.csv"
   content_type           = "text/csv"
