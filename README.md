@@ -18,24 +18,23 @@ Build a pipeline to:
 
 ## 🏗️ Architecture Overview
 
-![Image](https://images.openai.com/static-rsc-4/lVVpWUOISIYaQoYrYgJLfQh5-oeKmLc7DCPIrIn4hYNfwi9rE84PpDlbqxEfAN3F7RcAq6sP43aIS94ahhauwSCBcaVpWZy7L3hEdGvsyUGEl9sO9WgVXQD2IXokkV3wyMNR-igFrlXgdBGDzwjHLioRZGXLnHJ9IYsFh0uQel_nCtU9s-21tUSGVvcP4QM4?purpose=fullsize)
+```mermaid
+flowchart LR
+    RAW["Azure Blob Storage<br/>raw/input/employees.csv"]
+    ADF["ADF Pipeline<br/>pl_employee_transform"]
+    FLOW["Mapping Data Flow<br/>df_employee_transform<br/>Azure IR / Spark"]
+    CLEAN["Azure Blob Storage<br/>clean/output/"]
 
-![Image](https://images.openai.com/static-rsc-4/bOaWXNIwjeaqthDCoAdx4D1FLqB_Eod23B46p1pFg-NmNrPttAmKx8yKnk_Rnx2yFNMScWGg7_UbHPt3DjKY4OpaGQkWqvrcvFVdXqc9TioQ49NJADAEf8CP1i32MkrWWAFWsR4CRzTUDdxutYo4SmRTtfHM0GZtbNmIYiNGO6s_j-hb8RSRzZVC468B9oCi?purpose=fullsize)
+    ADF -->|"ExecuteDataFlow activity"| FLOW
+    RAW -->|"Read CSV"| FLOW
+    FLOW -->|"Write transformed CSV"| CLEAN
+```
 
-![Image](https://images.openai.com/static-rsc-4/MQrI-S9wtF0wusIgKxA1jIevDG3lk7EOoGSzCVsqo6BaXoqgrghYnGY189vdHtl5d_AvcBBViFUBdizviWOg2s509aP2KGNvChxxnNUQ9ds6e5hoWKW_Vn93IOoKNVOpP3W03ij2d15m4iA2B8218CrJehTk1LAFNW0KjgZCWxr4o6IN2XRwM7nFFAppdfco?purpose=fullsize)
+**Transformation:** Source → Derived Column (`salary_with_bonus = round(salary * 1.10, 2)`) → Filter (`age > 25`) → Select → Sink.
 
-![Image](https://images.openai.com/static-rsc-4/ehfpuZOqBjobb4UIPcsiIf5BLS469VhNJLIa3hbCD_GqkQDHyhslI7Y3LUmnDd8LMCoy657T3NkVX1gOh0HOMeY73C26oZSQPK-Xkic_KekFVNJM4h5Ru8TAGzvzdlRUsgCfdPT842sZwkQ4xB08Px9f-bdcDj0PMDyfACIHtjxrDZ05T_PVlTL7uZ4O1ofu?purpose=fullsize)
+**Expected output:** 3 records from 4 input records. Both Blob containers are in the same storage account. The ADF pipeline orchestrates the Data Flow; the Spark runtime reads and writes Blob data.
 
-![Image](https://images.openai.com/static-rsc-4/4BB18GHvHfF0ePBkSBnmU3FoEuZim7WHJiLOEQdB8fPYiBgmRPsbCRDeNK7qXLJtCh-Kqrp69il4LEMKNYSTTBC-sdeYYM-utJbPhU722mb4nDffipjQX4f9aeqhnA6gzB7gAZgI6TpdboaYGgU3XBs7y5AjoJv0pgKwapJEd71B3FgSp5Lhap_vUsJSgdTv?purpose=fullsize)
-
-![Image](https://images.openai.com/static-rsc-4/snLgQKi3w1IRVUSgNugTNmHUaaXMxG0gOj4UIwYepF-KwIDTOJrCgK5NM_1PF6iOgUW5ZyP6Jd6_u4Bn3vUviRXmt7_s5rweLLgSvPIMOXXo6btCL86EDKVyalmF2XhDPgleX5fhYvhwRYQYcb3k3luqcl_Vels_IDviUgLf1W5zxeTsIgy7OGrCYDXxCZVS?purpose=fullsize)
-
-### Flow:
-
-1. Source → Blob Storage (Raw Data)
-2. ADF Pipeline triggers Data Flow
-3. Data Flow performs transformations
-4. Sink → Azure SQL Database / Clean Storage
+[Detailed architecture and sequence diagrams](docs/ARCHITECTURE.md) · [Azure deployment commands](docs/AZURE-DEPLOYMENT.md)
 
 ---
 
