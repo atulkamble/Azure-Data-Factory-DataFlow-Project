@@ -1,0 +1,80 @@
+{
+  "name": "df_employee_transform",
+  "properties": {
+    "type": "MappingDataFlow",
+    "typeProperties": {
+      "sources": [
+        {
+          "dataset": {
+            "referenceName": "ds_employees_raw",
+            "type": "DatasetReference"
+          },
+          "name": "sourceEmployees"
+        }
+      ],
+      "sinks": [
+        {
+          "dataset": {
+            "referenceName": "ds_employees_clean",
+            "type": "DatasetReference"
+          },
+          "name": "sinkEmployees"
+        }
+      ],
+      "transformations": [
+        {
+          "name": "deriveBonus"
+        },
+        {
+          "name": "filterAdults"
+        },
+        {
+          "name": "selectColumns"
+        }
+      ],
+      "scriptLines": [
+        "source(output(",
+        "          id as integer,",
+        "          name as string,",
+        "          age as integer,",
+        "          salary as decimal(12,2),",
+        "          department as string",
+        "     ),",
+        "     allowSchemaDrift: false,",
+        "     validateSchema: true,",
+        "     ignoreNoFilesFound: false,",
+        "     format: 'delimited') ~> sourceEmployees",
+        "sourceEmployees derive(salary_with_bonus = round(salary * 1.10, 2)) ~> deriveBonus",
+        "deriveBonus filter(age > 25) ~> filterAdults",
+        "filterAdults select(mapColumn(",
+        "     id,",
+        "     name,",
+        "     age,",
+        "     salary,",
+        "     salary_with_bonus,",
+        "     department",
+        "),",
+        "skipDuplicateMapInputs: true,",
+        "skipDuplicateMapOutputs: true) ~> selectColumns",
+        "selectColumns sink(allowSchemaDrift: false,",
+        "     validateSchema: true,",
+        "     input(",
+        "          id as integer,",
+        "          name as string,",
+        "          age as integer,",
+        "          salary as decimal(12,2),",
+        "          salary_with_bonus as decimal(12,2),",
+        "          department as string",
+        "     ),",
+        "     format: 'delimited',",
+        "     filePattern:'single',",
+        "     partitionFileNames:['employees_clean.csv'],",
+        "     umask: 0022,",
+        "     preCommands: [],",
+        "     postCommands: [],",
+        "     skipDuplicateMapInputs: true,",
+        "     skipDuplicateMapOutputs: true) ~> sinkEmployees"
+      ]
+    }
+  }
+}
