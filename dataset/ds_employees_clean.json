@@ -45,9 +45,6 @@
         "name": "department",
         "type": "String"
       }
-    ],
-    "annotations": [
-      "Output directory only; the Data Flow sink controls generated file naming. Numeric types are defined in the Data Flow projection."
     ]
   }
 }
