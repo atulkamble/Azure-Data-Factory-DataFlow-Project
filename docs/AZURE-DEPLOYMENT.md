@@ -70,7 +70,6 @@ The checked-in `linkedService/ls_blob_storage.json` contains the placeholder `RE
 ```bash
 mkdir -p .deployment
 sed "s/REPLACE_STORAGE_ACCOUNT/$STORAGE/g" linkedService/ls_blob_storage.json > .deployment/ls_blob_storage.json
-az datafactory linked-service create --resource-group "$RG" --factory-name "$FACTORY" --linked-service-name ls_blob_storage --properties @.deployment/ls_blob_storage.json
 ```
 
 **Important:** Azure CLI `--properties` expects the linked service *properties object*, not the full exported `{name,properties}` wrapper. The repository's exported JSON files use the wrapper format. Extract `.properties` for CLI deployments with `jq` (available in Azure Cloud Shell):
@@ -80,7 +79,7 @@ jq '.properties' .deployment/ls_blob_storage.json > .deployment/ls-properties.js
 az datafactory linked-service create -g "$RG" --factory-name "$FACTORY" --linked-service-name ls_blob_storage --properties @.deployment/ls-properties.json
 ```
 
-If the initial wrapper-form command above fails, use the extracted-properties command. For identity-based Blob authentication, confirm the linked service uses a supported managed-identity configuration in ADF Studio (Manage → Linked services → Test connection).
+For identity-based Blob authentication, confirm the linked service uses a supported managed-identity configuration in ADF Studio (Manage → Linked services → Test connection).
 
 ## 7. Deploy source and sink datasets
 
@@ -143,10 +142,10 @@ Expected business result: three records (ages 28, 35, 40) and bonus salaries 550
 ## 12. Monitor and troubleshoot
 
 ```bash
-az datafactory activity-run query-by-pipeline-run -g "$RG" --factory-name "$FACTORY" --run-id "$RUN_ID" --last-updated-after "$(date -u -v-1d +%Y-%m-%dT%H:%M:%SZ)" --last-updated-before "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+az datafactory activity-run query-by-pipeline-run -g "$RG" --factory-name "$FACTORY" --run-id "$RUN_ID" --last-updated-after "2026-01-01T00:00:00Z" --last-updated-before "2030-01-01T00:00:00Z"
 ```
 
-The `date -v-1d` option is macOS-specific; on GNU/Linux use `date -u -d '1 day ago'` instead. For a portable alternative, use the ADF Studio **Monitor** tab and select the pipeline run.
+The example monitoring window is intentionally broad for this lab. For routine operations, use a narrow UTC time window or the ADF Studio **Monitor** tab.
 
 Common failures:
 - **403 / authorization:** Verify both your user and ADF managed identity have Blob data-plane access and wait for role propagation.
