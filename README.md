@@ -1,18 +1,17 @@
-# 🚀 Azure Data Factory (ADF) Data Flow Project
+# Azure Data Factory Employee Data Transformation with Terraform
 
-## 📌 Project Title
+## Project Title
 
-**End-to-End Data Transformation using Azure Data Factory Mapping Data Flow**
+**Automated Azure Data Factory Mapping Data Flow Deployment and Employee CSV Transformation Using Terraform**
 
----
+## Objectives
 
-## 🎯 Objective
-
-Build a pipeline to:
-
-* Ingest raw data (CSV/JSON)
-* Transform data using **Mapping Data Flow**
-* Load cleaned data into destination (Azure SQL / Blob)
+- Provision Azure resources using Terraform: resource group, Blob Storage, Data Factory, and managed identity permissions.
+- Upload the sample employee CSV to the `raw/input/` Blob location.
+- Deploy the Blob linked service, source and sink datasets, Mapping Data Flow, and pipeline from version-controlled JSON.
+- Calculate `salary_with_bonus` as a 10% increase, filter employees with `age > 25`, and select the required columns.
+- Execute the pipeline and validate the expected three-row CSV in `clean/output/`.
+- Monitor execution and clean up lab resources when finished.
 
 ---
 
@@ -38,21 +37,88 @@ flowchart LR
 
 ---
 
-## Terraform Deployment
+## Deploy and Run the Project
 
-Deploy the full Azure Data Factory lab, including storage, sample CSV, managed identity permissions, linked service, datasets, Data Flow, and pipeline, using the [Terraform configuration](terraform/README.md).
+**Prerequisites:** Azure CLI, Terraform 1.6+, Azure subscription access, and permissions to create resources and assign RBAC roles. Clone the repository and run these commands from its root.
+
+### 1. Sign in and select the subscription
+
+```bash
+az login
+az account set --subscription "08b7b8d4-af42-4972-9517-11ea256ea068"
+az account show --query "{name:name,id:id}" -o table
+```
+
+### 2. Deploy infrastructure and ADF artifacts
 
 ```bash
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
-# Set subscription_id in terraform.tfvars
 terraform init
+terraform fmt -check
 terraform validate
-terraform plan
-terraform apply
+terraform plan -out=tfplan
+terraform apply tfplan
+terraform output
 ```
 
-Terraform provisions the resources; run the pipeline separately using the commands in `terraform/README.md`. Terraform deployment verified on 1 November 2026: **13 resources created** in `centralindia` (`rg-adf-dataflow-ukamp80b`, factory `adf-dataflow-ukamp80b`). Pipeline execution remains to be verified.
+The Terraform configuration uploads `sample-data/employees.csv` and creates the Blob containers, managed identity role assignment, linked service, datasets, Mapping Data Flow, and pipeline. **Verified 1 November 2026:** 13 resources deployed successfully in `centralindia`.
+
+### 3. Run the pipeline
+
+```bash
+RG=$(terraform output -raw resource_group_name)
+FACTORY=$(terraform output -raw data_factory_name)
+STORAGE=$(terraform output -raw storage_account_name)
+
+RUN_ID=$(az datafactory pipeline create-run \
+  --resource-group "$RG" \
+  --factory-name "$FACTORY" \
+  --name pl_employee_transform \
+  --query runId -o tsv)
+echo "Pipeline run ID: $RUN_ID"
+```
+
+### 4. Check pipeline and activity status
+
+```bash
+az datafactory pipeline-run show \
+  --resource-group "$RG" \
+  --factory-name "$FACTORY" \
+  --run-id "$RUN_ID" \
+  --query "{status:status,message:message}" -o json
+
+az datafactory activity-run query-by-pipeline-run \
+  --resource-group "$RG" \
+  --factory-name "$FACTORY" \
+  --run-id "$RUN_ID" \
+  --last-updated-after "2026-01-01T00:00:00Z" \
+  --last-updated-before "2027-01-01T00:00:00Z" \
+  --query "value[].{activity:activityName,status:status,error:error.message}" -o table
+```
+
+The pipeline may remain `InProgress` while ADF starts Spark compute. Check again until it reaches a terminal status. You can also inspect the run in **Azure Data Factory Studio → Monitor**.
+
+### 5. Verify the transformed CSV
+
+```bash
+az storage blob list \
+  --account-name "$STORAGE" \
+  --container-name clean \
+  --prefix output/ \
+  --auth-mode login \
+  -o table
+```
+
+Expected output: `clean/output/employees_clean.csv`, containing the three employees older than 25 and their 10% salary bonus. Your signed-in Azure identity must have Blob data read permissions for `--auth-mode login`; the Terraform role assignment grants access to the **Data Factory managed identity**, not automatically to your user.
+
+### 6. Optional cleanup
+
+```bash
+terraform destroy
+```
+
+**Status:** Terraform infrastructure deployment succeeded. Pipeline execution and transformed output have **not yet been confirmed**. Mapping Data Flow execution incurs Azure compute charges. See [Terraform deployment details](terraform/README.md).
 
 ---
 
