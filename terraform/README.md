@@ -9,7 +9,7 @@ Creates: resource group, StorageV2 account, `raw` and `clean` containers, upload
 ```bash
 az login
 az account list -o table
-az account set --subscription "<SUBSCRIPTION_ID>"
+az account set --subscription "08b7b8d4-af42-4972-9517-11ea256ea068"
 ```
 
 ## 2. Configure
@@ -17,7 +17,7 @@ az account set --subscription "<SUBSCRIPTION_ID>"
 ```bash
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars and set subscription_id
+# Subscription ID is prefilled in the example file
 ```
 
 ## 3. Deploy
