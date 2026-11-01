@@ -1,0 +1,17 @@
+{
+  "name": "ls_blob_storage",
+  "properties": {
+    "type": "AzureBlobStorage",
+    "typeProperties": {
+      "serviceEndpoint": "https://REPLACE_STORAGE_ACCOUNT.blob.core.windows.net/",
+      "accountKind": "StorageV2"
+    },
+    "connectVia": {
+      "referenceName": "AutoResolveIntegrationRuntime",
+      "type": "IntegrationRuntimeReference"
+    },
+    "annotations": [
+      "Replace storage account name; factory managed identity needs Storage Blob Data Contributor"
+    ]
+  }
+}

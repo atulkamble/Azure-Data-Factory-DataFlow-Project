@@ -1,0 +1,44 @@
+{
+  "name": "ds_employees_raw",
+  "properties": {
+    "linkedServiceName": {
+      "referenceName": "ls_blob_storage",
+      "type": "LinkedServiceReference"
+    },
+    "type": "DelimitedText",
+    "typeProperties": {
+      "location": {
+        "type": "AzureBlobStorageLocation",
+        "fileName": "employees.csv",
+        "folderPath": "input",
+        "container": "raw"
+      },
+      "columnDelimiter": ",",
+      "escapeChar": "\\",
+      "firstRowAsHeader": true,
+      "quoteChar": "\""
+    },
+    "schema": [
+      {
+        "name": "id",
+        "type": "String"
+      },
+      {
+        "name": "name",
+        "type": "String"
+      },
+      {
+        "name": "age",
+        "type": "String"
+      },
+      {
+        "name": "salary",
+        "type": "String"
+      },
+      {
+        "name": "department",
+        "type": "String"
+      }
+    ]
+  }
+}
