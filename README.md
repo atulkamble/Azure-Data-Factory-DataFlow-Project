@@ -52,7 +52,7 @@ terraform plan
 terraform apply
 ```
 
-Terraform provisions the resources; run the pipeline separately using the commands in `terraform/README.md`. Live deployment has not yet been verified.
+Terraform provisions the resources; run the pipeline separately using the commands in `terraform/README.md`. Terraform deployment verified on 1 November 2026: **13 resources created** in `centralindia` (`rg-adf-dataflow-ukamp80b`, factory `adf-dataflow-ukamp80b`). Pipeline execution remains to be verified.
 
 ---
 
@@ -150,6 +150,14 @@ age > 25
 ### 5️⃣ Sink
 
 * Load into SQL table or Blob
+
+---
+
+### Azure Data Factory Studio – Deployed Mapping Data Flow
+
+![Deployed ADF Mapping Data Flow showing sourceEmployees, deriveBonus, filterAdults, selectColumns, and sinkEmployees](docs/images/adf-mapping-data-flow.png)
+
+*Screenshot captured 1 November 2026 in Azure Data Factory Studio. It shows the deployed visual transformation; pipeline execution is not yet verified.*
 
 ---
 
